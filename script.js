@@ -13,6 +13,33 @@ canvasSquareDimension = {
     height: canvasDimension.height / 4
 }
 
+tileTriangleDimension = {
+    width: 38.5,
+    height: 22.5,
+    cornerRadius: 4
+}
+
+// const drawTriangleTile = (width, height, cornerRadius, anchorX, anchorY, rotation) => {
+//     const topVertex = { x: anchorX, y: anchorY - height };
+//     const leftVertex = { x: anchorX - width / 2, y: anchorY };
+//     const rightVertex = { x: anchorX + width / 2, y: anchorY };
+
+//     ctx.translate(anchorX, anchorY);
+//     ctx.rotate(rotation);
+//     ctx.translate(-anchorX, -anchorY);
+    
+//     ctx.beginPath();
+//     ctx.moveTo(topVertex.x, topVertex.y);
+//     ctx.arcTo(leftVertex.x, leftVertex.y, rightVertex.x, rightVertex.y, cornerRadius);
+//     ctx.arcTo(rightVertex.x, rightVertex.y, topVertex.x, topVertex.y, cornerRadius);
+//     ctx.arcTo(topVertex.x, topVertex.y, leftVertex.x, leftVertex.y, cornerRadius);
+    
+//     ctx.setTransform(1, 0, 0, 1, 0, 0);
+    
+//     ctx.fillStyle = '#000000';
+//     ctx.fill();
+// }
+
 const drawBoard = (canvasDimension, canvasSquareDimension) => {
     // a1 - b1
     ctx.beginPath();
@@ -295,8 +322,8 @@ const drawBoard = (canvasDimension, canvasSquareDimension) => {
     ctx.stroke();
 }
 
-drawBoard(canvasDimension, canvasSquareDimension);
 
+drawBoard(canvasDimension, canvasSquareDimension);
 
 
 

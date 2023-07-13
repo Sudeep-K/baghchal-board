@@ -8,7 +8,50 @@
 </head>
 <body>
     <h1>Baghchal Board</h1>
-    <canvas id="canvas-board" width="500" height="500"></canvas>
+
+    <svg style="visibility: hidden; position: absolute;" width="0" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1">
+        <defs>
+              <filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />    
+                  <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+                  <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+              </filter>
+          </defs>
+    </svg>
+    <div class="wrapper">
+        <div class="container">
+            <canvas id="canvas-board" width="500" height="500"></canvas>
+            
+            <div class="tile tile-triangle top-left"></div>
+            <div class="tile tile-triangle"></div>
+            <div class="tile tile-triangle"></div>
+            <div class="tile tile-triangle"></div>
+            <div class="tile tile-triangle top-right"></div>
+
+            <div class="tile tile-triangle"></div>
+            <div class="tile tile-square"></div>
+            <div class="tile tile-square"></div>
+            <div class="tile tile-square"></div>
+            <div class="tile tile-triangle"></div>
+
+            <div class="tile tile-triangle"></div>
+            <div class="tile tile-square"></div>
+            <div class="tile tile-square"></div>
+            <div class="tile tile-square"></div>
+            <div class="tile tile-triangle"></div>
+
+            <div class="tile tile-triangle"></div>
+            <div class="tile tile-square"></div>
+            <div class="tile tile-square"></div>
+            <div class="tile tile-square"></div>
+            <div class="tile tile-triangle"></div>
+
+            <div class="tile tile-triangle bottom-left"></div>
+            <div class="tile tile-triangle"></div>
+            <div class="tile tile-triangle"></div>
+            <div class="tile tile-triangle"></div>
+            <div class="tile tile-triangle bottom-right"></div>
+        </div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
