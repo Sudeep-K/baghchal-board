@@ -13,32 +13,10 @@ canvasSquareDimension = {
     height: canvasDimension.height / 4
 }
 
-tileTriangleDimension = {
-    width: 38.5,
-    height: 22.5,
-    cornerRadius: 4
+pieceGoatDimension = {
+    width: 50,
+    height: 50
 }
-
-// const drawTriangleTile = (width, height, cornerRadius, anchorX, anchorY, rotation) => {
-//     const topVertex = { x: anchorX, y: anchorY - height };
-//     const leftVertex = { x: anchorX - width / 2, y: anchorY };
-//     const rightVertex = { x: anchorX + width / 2, y: anchorY };
-
-//     ctx.translate(anchorX, anchorY);
-//     ctx.rotate(rotation);
-//     ctx.translate(-anchorX, -anchorY);
-    
-//     ctx.beginPath();
-//     ctx.moveTo(topVertex.x, topVertex.y);
-//     ctx.arcTo(leftVertex.x, leftVertex.y, rightVertex.x, rightVertex.y, cornerRadius);
-//     ctx.arcTo(rightVertex.x, rightVertex.y, topVertex.x, topVertex.y, cornerRadius);
-//     ctx.arcTo(topVertex.x, topVertex.y, leftVertex.x, leftVertex.y, cornerRadius);
-    
-//     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    
-//     ctx.fillStyle = '#000000';
-//     ctx.fill();
-// }
 
 const drawBoard = (canvasDimension, canvasSquareDimension) => {
     // a1 - b1
@@ -322,10 +300,50 @@ const drawBoard = (canvasDimension, canvasSquareDimension) => {
     ctx.stroke();
 }
 
-
 drawBoard(canvasDimension, canvasSquareDimension);
 
+// coordinate conversion for 1d to 2d array format
+const convertTo2d = (index) => {
+    const row = Math.floor(index/5);
+    const column = index % 5;
+    return { row, column }
+}
 
+// coordinate conversion for 2d to 1d array format
+const convertTo1d = (row, column) => {
+    return row * 5 + column;
+}
+
+// add query selector to each tiles to get position for placement of piece on click event
+const tiles = document.querySelectorAll('.tile');
+tiles.forEach((tile, index) => {
+    tile.addEventListener('click', () => {
+        const { row, column } = convertTo2d(index);
+        
+        // add piece to board
+        const container = document.querySelector('.container');
+        const piece = document.createElement('img');
+        piece.classList.add('piece');
+        piece.classList.add(`piece-${index}`);
+        piece.setAttribute('src', 'goat.png');
+        piece.setAttribute('draggable', 'true');
+        piece.style.backgroundImage = 'url("goat.png")';
+        piece.style.top = `${canvasSquareDimension.height * row - pieceGoatDimension.height}px`
+        piece.style.left = `${canvasSquareDimension.width * column - pieceGoatDimension.width / 2}px`
+
+        piece.addEventListener('dragstart', (e) => {
+            console.log('drag start');
+        })
+
+        piece.addEventListener('dragend', (e) => {
+            console.log('drag end');
+        })
+
+        container.appendChild(piece);
+    })
+})
+
+// dragover, dragenter, dragleave, drop
 
 
 

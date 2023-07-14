@@ -1,10 +1,15 @@
 :root {
     --canvasWidth: 500px;
     --canvasHeight: 500px;
+    
     --triangleTileWidth: 30px;
     --triangleTileHeight: 21px;
+
     --squareTileWidth: 32px;
     --squareTileHeight: 32px;
+
+    --goatPieceWidth: 50px;
+    --goatPieceHeight: 50px;
 }
 
 * {
@@ -18,7 +23,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 24px;
+    gap: 8rem;
 }
 
 #canvas-board {
@@ -34,11 +39,11 @@ body {
     border-radius: 16px;
     width: var(--canvasWidth);
     height: var(--canvasHeight);
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 .container {
-    overflow: hidden;
+    /* overflow: hidden; */
     width: var(--canvasWidth);
     height: var(--canvasHeight);
 }
@@ -214,5 +219,12 @@ body {
 }
 
 .tile {
+    cursor: pointer;
+}
+
+.piece {
+    position: absolute;
+    height: var(--goatPieceHeight);
+    width: var(--goatPieceWidth);
     cursor: pointer;
 }
