@@ -18,6 +18,15 @@ pieceGoatDimension = {
     height: 50
 }
 
+pieceTigerDimension = {
+    width: 50,
+    height: 50
+}
+
+draggedPieceInfo = {
+    pieceClassName: ''
+}
+
 const drawBoard = (canvasDimension, canvasSquareDimension) => {
     // a1 - b1
     ctx.beginPath();
@@ -302,10 +311,180 @@ const drawBoard = (canvasDimension, canvasSquareDimension) => {
 
 drawBoard(canvasDimension, canvasSquareDimension);
 
+const Board = {
+    //goat 1
+    //tiger 0
+    board: [
+        [0, null, null, null, 0],
+        [null, null, null, null, null],
+        [null, null, null, null, null],
+        [null, null, null, null, null],
+        [0, null, null, null, 0],
+    ],
+
+    tigers: {
+        trapped: [], //no of trapped tigers
+        position: [[0, 0], [0, 4], [4, 0], [4, 4]],
+
+    },
+
+    goats: {
+        onHand: 20,  //initially 20 Goats are in hand to place
+        killed: 0,   //initially 0 goats are killed
+        spaceCaptured: [],
+    },
+
+    playerTurn: "goat", //initially its goat turn
+
+    //Position of peice selected (find next valid move for this piece)
+    //-1 means no selection needed (placing the goats on baord still left)
+    selectedPosition: [3, 1],
+    nextValidMoves: [],   //valid move for selected peice
+}
+
+//returns the tiger trapped in the board
+trappedTigers = (Board) => {
+    newTrapped = []
+    for (let i = 0; i < 4; i++) {
+        validMove = []
+        position = Board.tigers.position[i]
+        row = position[0]
+        col = position[1]
+        //if the selected position is even
+        if (checkEven(row, col)) {
+            //we need to check for diagonal too cause the pieces in even places have that choices
+            directionChoice = directionsWithDiagonal
+        }
+        else {
+            directionChoice = directions
+        }
+        for (const direction of directionChoice) {
+            const newRow = row + direction.row;
+            const newCol = col + direction.col;
+
+            //one more step in a straight line
+            const newKillRow = newRow + direction.row;
+            const newKillCol = newCol + direction.col;
+
+            // console.log("new", newRow, newCol)
+            // console.log("newkill", newKillRow, newKillCol)
+
+            // Check if the new position is within the bounds of the board
+            if (newRow >= 0 &&
+                newRow < Board.board.length &&
+                newCol >= 0 &&
+                newCol < Board.board[row].length
+            ) {
+                // Check if the new position is empty
+                if (Board.board[newRow][newCol] === null) {
+                    validMove.push([newRow, newCol])
+                    // console.log("push traped", newRow, newCol)
+                }
+                //if killing a goat is possible by going over the goat position in a straight line
+                else if (Board.board[newRow][newCol] === 1) {
+                    //check if it is in bound of board
+                    if (newKillRow >= 0 &&
+                        newKillRow < Board.board.length &&
+                        newKillCol >= 0 &&
+                        newKillCol < Board.board[row].length
+                    ) {
+                        if (Board.board[newKillRow][newKillCol] === null) {
+                            validMove.push([newKillRow, newKillCol])
+                            // console.log("push newkill", newKillRow, newKillCol)
+                        }
+                    }
+                }
+            }
+        }
+        if (validMove.length === 0) {
+            newTrapped.push(Board.tigers.position[i])
+        }
+    }
+    return (newTrapped)
+}
+
+gameOver = (Board) => {
+    // condn. 1 => killed 5 goats
+    if (Board.goats.killed >= 5) {
+        return 1;
+    }
+    //condn. 2 => goats have no valid moves  (if game has atleast one goat with a valid place to move than game not over)
+    else if (Board.goats.onHand === 0) {
+        validMovenumber = 0;
+        for (let row = 0; row < Board.board.length && validMovenumber === 0; row++) {
+            for (let col = 0; col < Board.board[row].length && validMovenumber === 0; col++) {
+                if (Board.board[row][col] === null) {
+
+                    if (checkEven(row, col)) {
+                        //we need to check for diagonal too cause the pieces in even places have that choices
+                        directionChoice = directionsWithDiagonal
+                    }
+                    else {
+                        directionChoice = directions
+                    }
+                    for (const direction of directionChoice) {
+                        const newRow = row + direction.row;
+                        const newCol = col + direction.col;
+
+                        if (newRow >= 0 &&
+                            newRow < Board.board.length &&
+                            newCol >= 0 &&
+                            newCol < Board.board[row].length &&
+                            Board.board[newRow][newCol] === 1
+                        ) {
+                            validMovenumber++;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (validMovenumber === 0) {
+            console.log("validMovenumber", validMovenumber)
+            return 1
+        }
+    }
+    //condn. 3 => all tigers are trapped
+    else if (Board.tigers.trapped.length === 4) {
+        return 2;
+    }
+    // the game is not over
+    return 0;
+}
+
+// place initial tigers position
+for (i = 0; i <= 3; i++) {
+    // add piece to board
+    const container = document.querySelector('.container');
+    const piece = document.createElement('img');
+    piece.classList.add('piece');
+    piece.classList.add(`piece-${Board.tigers.position[i][0] * 5 + Board.tigers.position[i][1]}`);
+    console.log(`piece-${Board.tigers.position[i][0] * 5 + Board.tigers.position[i][1]}`);
+    piece.setAttribute('src', 'tiger.png');
+    piece.setAttribute('draggable', 'true');
+    piece.style.top = `${canvasSquareDimension.height * Board.tigers.position[i][0] - pieceTigerDimension.height}px`
+    piece.style.left = `${canvasSquareDimension.width * Board.tigers.position[i][1] - pieceTigerDimension.width / 2}px`
+
+    piece.addEventListener('dragstart', (e) => {
+        console.log('drag started' + piece.className.split(' ')[1]);
+        if (Board.playerTurn == 'tiger') {
+            draggedPieceInfo.pieceClassName = piece.className.split(' ')[1];
+            console.log('I am in ')
+        }
+    })
+
+    piece.addEventListener('dragend', (e) => {
+        console.log('drag end');
+    })
+
+    container.appendChild(piece);
+}
+
 // coordinate conversion for 1d to 2d array format
 const convertTo2d = (index) => {
-    const row = Math.floor(index/5);
+    const row = Math.floor(index / 5);
     const column = index % 5;
+    console.log(row, column, "mula gandu row")
     return { row, column }
 }
 
@@ -319,34 +498,84 @@ const tiles = document.querySelectorAll('.tile');
 tiles.forEach((tile, index) => {
     tile.addEventListener('click', () => {
         const { row, column } = convertTo2d(index);
+
+        if (Board.goats.onHand > 0 && Board.board[row][column] == null && Board.playerTurn == 'goat') {
+            Board.goats.onHand -= 1;
+            Board.board[row][column] = 1;
+            Board.playerTurn = 'tiger'
+            // add piece to board
+            const container = document.querySelector('.container');
+            const piece = document.createElement('img');
+            piece.classList.add('piece');
+            piece.classList.add(`piece-${index}`);
+            piece.setAttribute('src', 'goat.png');
+            piece.setAttribute('draggable', 'true');
+            piece.style.top = `${canvasSquareDimension.height * row - pieceGoatDimension.height}px`
+            piece.style.left = `${canvasSquareDimension.width * column - pieceGoatDimension.width / 2}px`
+
+            piece.addEventListener('dragstart', (e) => {
+                if (Board.playerTurn == 'goat' && Board.goats.onHand <= 0) {
+                    draggedPieceInfo.pieceClassName = piece.className.split(' ')[1]
+                }    
+            })
         
-        // add piece to board
-        const container = document.querySelector('.container');
-        const piece = document.createElement('img');
-        piece.classList.add('piece');
-        piece.classList.add(`piece-${index}`);
-        piece.setAttribute('src', 'goat.png');
-        piece.setAttribute('draggable', 'true');
-        piece.style.backgroundImage = 'url("goat.png")';
-        piece.style.top = `${canvasSquareDimension.height * row - pieceGoatDimension.height}px`
-        piece.style.left = `${canvasSquareDimension.width * column - pieceGoatDimension.width / 2}px`
+            piece.addEventListener('dragend', (e) => {
+                console.log('drag end');
+            })
 
-        piece.addEventListener('dragstart', (e) => {
-            console.log('drag start');
-        })
-
-        piece.addEventListener('dragend', (e) => {
-            console.log('drag end');
-        })
-
-        container.appendChild(piece);
+            container.appendChild(piece);
+        }
     })
 })
 
 // dragover, dragenter, dragleave, drop
+tiles.forEach((tile, index) => {
+    tile.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        // console.log('dragged over to ' + index)
+    })
+    // tile.addEventListener('dragenter', () => {
+    //     console.log('drag entered to ' + index)
+    // })
+    // tile.addEventListener('dragleave', () => {
+    //     console.log('drag left from ' + index)
+    // })
+    tile.addEventListener('drop', () => {
+        const { row, column } = convertTo2d(index);
+        const oldCoordinates = convertTo2d(parseInt(draggedPieceInfo.pieceClassName.split('-')[1]));
+
+        console.log('drop')
+        const piece = document.querySelector(`.${draggedPieceInfo.pieceClassName}`);
+        piece.classList.remove(draggedPieceInfo.pieceClassName);
+        piece.classList.add(`piece-${index}`)
+        piece.style.top = `${canvasSquareDimension.height * row - pieceGoatDimension.height}px`;
+        piece.style.left = `${canvasSquareDimension.width * column - pieceGoatDimension.width / 2}px`;
+
+        // change board
+        if (Board.playerTurn == 'goat') {
+            Board.board[oldCoordinates.row][oldCoordinates.column] = null
+            Board.board[row][column] = 1
+            Board.playerTurn = 'tiger'
+        } else if (Board.playerTurn == 'tiger') {
+            Board.board[oldCoordinates.row][oldCoordinates.column] = null
+            Board.board[row][column] = 0
+            Board.playerTurn = 'goat'
+        }
+        console.log(Board.board)
+    })
+})
 
 
+// const gameFunction = () => {
+//     while (!gameOver(Board)) {
+//         if (Board.playerTurn == 'goat') {
+            
+//         }
+//     }
+// }
 
+
+// gameFunction();
 
 
 
