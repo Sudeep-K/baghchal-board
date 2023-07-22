@@ -328,7 +328,7 @@ tiles.forEach((tile, index) => {
         piece.setAttribute('src', 'goat.png');
         piece.setAttribute('draggable', 'true');
         piece.style.backgroundImage = 'url("goat.png")';
-        piece.style.top = `${canvasSquareDimension.height * row - pieceGoatDimension.height}px`
+        piece.style.top = `${canvasSquareDimension.height * row - pieceGoatDimension.height / 2}px`
         piece.style.left = `${canvasSquareDimension.width * column - pieceGoatDimension.width / 2}px`
 
         piece.addEventListener('dragstart', (e) => {
